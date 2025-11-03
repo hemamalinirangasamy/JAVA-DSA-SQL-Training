@@ -1,0 +1,252 @@
+ create database kgcas;
+Query OK, 1 row affected (0.41 sec)
+
+mysql> use kgcas;
+Database changed
+mysql> create table Person(
+    -> personId int Primary Key,
+    -> lastname varchar(20),
+    -> firstname varchar(20)
+    -> );
+Query OK, 0 rows affected (0.94 sec)
+
+mysql> create table Address(
+    -> addressId int,
+    -> personId int,
+    -> City varchar(20),
+    -> State varchar(20)
+    -> );
+Query OK, 0 rows affected (0.24 sec)
+
+mysql> insert into Person values(&personId,'&lastname','&firstname');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '&personId,'&lastname','&firstname')' at line 1
+mysql> insert into Person values(1,'Wang','allen'),(2,'Alice','Bob');
+Query OK, 2 rows affected (0.20 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from Person;
++----------+----------+-----------+
+| personId | lastname | firstname |
++----------+----------+-----------+
+|        1 | Wang     | allen     |
+|        2 | Alice    | Bob       |
++----------+----------+-----------+
+2 rows in set (0.03 sec)
+
+mysql> insert into Address values(1,2,'New York City','New York'),(2,1,'LeetCode','California');
+Query OK, 2 rows affected (0.07 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from Address;
++-----------+----------+---------------+------------+
+| addressId | personId | City          | State      |
++-----------+----------+---------------+------------+
+|         1 |        2 | New York City | New York   |
+|         2 |        1 | LeetCode      | California |
++-----------+----------+---------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> select firstname,lastname,City,State
+    -> from Person,Address;
++-----------+----------+---------------+------------+
+| firstname | lastname | City          | State      |
++-----------+----------+---------------+------------+
+| Bob       | Alice    | New York City | New York   |
+| allen     | Wang     | New York City | New York   |
+| Bob       | Alice    | LeetCode      | California |
+| allen     | Wang     | LeetCode      | California |
++-----------+----------+---------------+------------+
+4 rows in set (0.07 sec)
+
+mysql> update Address
+    -> set personId = 3
+    -> where addressId = 2;
+Query OK, 1 row affected (0.09 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from Address;
++-----------+----------+---------------+------------+
+| addressId | personId | City          | State      |
++-----------+----------+---------------+------------+
+|         1 |        2 | New York City | New York   |
+|         2 |        3 | LeetCode      | California |
++-----------+----------+---------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     p.firstname,
+    ->     p.lastname,
+    ->     a.City,
+    ->     a.State
+    -> FROM
+    ->     Person p
+    -> INNER JOIN
+    ->     Address a
+    -> ON
+    ->     p.personId = a.personId;
++-----------+----------+---------------+----------+
+| firstname | lastname | City          | State    |
++-----------+----------+---------------+----------+
+| Bob       | Alice    | New York City | New York |
++-----------+----------+---------------+----------+
+1 row in set (0.05 sec)
+
+mysql> SELECT
+    ->     p.firstname,
+    ->     p.lastname,
+    ->     a.City,
+    ->     a.State
+    -> FROM Person p
+    -> INNER JOIN Address a
+    -> ON p.personId = a.personId;
++-----------+----------+---------------+----------+
+| firstname | lastname | City          | State    |
++-----------+----------+---------------+----------+
+| Bob       | Alice    | New York City | New York |
++-----------+----------+---------------+----------+
+1 row in set (0.00 sec)
+
+mysql>  SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p RIGHT JOIN Address a
+    ->      ON p.personId = a.personId;
++-----------+----------+---------------+------------+
+| firstname | lastname | City          | State      |
++-----------+----------+---------------+------------+
+| Bob       | Alice    | New York City | New York   |
+| NULL      | NULL     | LeetCode      | California |
++-----------+----------+---------------+------------+
+2 rows in set (0.03 sec)
+
+mysql> SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p RIGHT JOIN Address a
+    ->      Person p LEFT JOIN Address a
+    ->      ON p.personId = a.personId;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Person p LEFT JOIN Address a
+     ON p.personId = a.personId' at line 7
+mysql>
+mysql> SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p RIGHT JOIN Address a
+    ->      ON p.personId = a.personId;
++-----------+----------+---------------+------------+
+| firstname | lastname | City          | State      |
++-----------+----------+---------------+------------+
+| Bob       | Alice    | New York City | New York   |
+| NULL      | NULL     | LeetCode      | California |
++-----------+----------+---------------+------------+
+2 rows in set (0.00 sec)
+
+mysql>  UNION
+    ->  SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p LEFT JOIN Address a
+    ->      ON p.personId = a.personId;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION
+ SELECT
+        p.firstname,
+       p.lastname,
+       a.City,
+        a.S' at line 1
+mysql> SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p RIGHT JOIN Address a
+    ->      ON p.personId = a.personId
+    ->  UNION
+    ->  SELECT
+    ->         p.firstname,
+    ->        p.lastname,
+    ->        a.City,
+    ->         a.State
+    ->      FROM Person p LEFT JOIN Address a
+    ->      ON p.personId = a.personId;
++-----------+----------+---------------+------------+
+| firstname | lastname | City          | State      |
++-----------+----------+---------------+------------+
+| Bob       | Alice    | New York City | New York   |
+| NULL      | NULL     | LeetCode      | California |
+| allen     | Wang     | NULL          | NULL       |
++-----------+----------+---------------+------------+
+3 rows in set (0.06 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> SELECT *
+    -> FROM (
+    ->     SELECT
+    ->         p.firstname,
+    ->         p.lastname,
+    ->         a.City,
+    ->         a.State
+    ->     FROM Person p
+    ->     RIGHT JOIN Address a
+    ->     ON p.personId = a.personId
+    ->     UNION
+    ->     SELECT
+    ->         p.firstname,
+    ->         p.lastname,
+    ->         a.City,
+    ->         a.State
+    ->     FROM Person p
+    ->     LEFT JOIN Address a
+    ->     ON p.personId = a.personId
+    -> ) AS combined
+    -> WHERE firstname IN ('Bob', 'allen');
++-----------+----------+---------------+----------+
+| firstname | lastname | City          | State    |
++-----------+----------+---------------+----------+
+| Bob       | Alice    | New York City | New York |
+| allen     | Wang     | NULL          | NULL     |
++-----------+----------+---------------+----------+
+2 rows in set (0.05 sec)
+
+mysql> SELECT
+    ->     p.firstname,
+    ->     p.lastname,
+    ->     a.City,
+    ->     a.State
+    -> FROM Person p
+    -> JOIN Address a
+    -> ON p.personId = a.personId;
++-----------+----------+---------------+----------+
+| firstname | lastname | City          | State    |
++-----------+----------+---------------+----------+
+| Bob       | Alice    | New York City | New York |
++-----------+----------+---------------+----------+
+1 row in set (0.00 sec)
+
+mysql> ^C
+mysql> SELECT
+    ->     p.firstname,
+    ->     p.lastname,
+    ->     a.City,
+    ->     a.State
+    -> FROM Person p
+    ->  left JOIN Address a
+    -> ON (p.personId = a.personId);
++-----------+----------+---------------+----------+
+| firstname | lastname | City          | State    |
++-----------+----------+---------------+----------+
+| allen     | Wang     | NULL          | NULL     |
+| Bob       | Alice    | New York City | New York |
++-----------+----------+---------------+----------+
+2 rows in set (0.00 sec)
+
+mysql> tee d:\task1.sql
