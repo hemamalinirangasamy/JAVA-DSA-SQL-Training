@@ -1,0 +1,28 @@
+package com.leetcode.problems;
+import java.util.Scanner;public class ProblemEx01 {
+	public static void main(String[] args) {		
+     /** * input:5
+		 * output: 
+		 * 			* * * * *
+		 * 			* * * * *
+		 * 			* * * * *
+		 * 			* * * * *
+		 * 			* * * * *
+		 * 
+		 * concept to be used:
+		 * --> User defined input using scanner class
+		 * --> Nested for loop prinitng the starts
+		 * 
+		 */
+		Scanner sc = new Scanner(System.in );
+		System.out.println("Enter the number of rows:");
+		int n = sc.nextInt();//5
+		for(int i =1; i<=n; i++) { // 1 to 5
+			for(int j =1;j<=n; j++) {// 1 1<=5
+				System.out.print(" ");// 5 star will be printed
+			}
+			System.out.println();
+		}
+		sc.close();
+	}
+}
